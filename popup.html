@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amazon Review Extractor</title>
+  <style>
+    body {
+      width: 350px;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8f9fa;
+      margin: 0;
+    }
+    
+    .container {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      margin: 0 0 20px 0;
+      color: #232f3e;
+      font-size: 18px;
+      text-align: center;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: #374151;
+    }
+    
+    input[type="number"], select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    input[type="checkbox"] {
+      margin: 0;
+    }
+    
+    .status {
+      margin: 15px 0;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 14px;
+      display: none;
+    }
+    
+    .status.success {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+    
+    .status.error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fca5a5;
+    }
+    
+    .status.info {
+      background: #dbeafe;
+      color: #1e40af;
+      border: 1px solid #93c5fd;
+    }
+    
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #ff9900;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    button:hover {
+      background: #e68900;
+    }
+    
+    button:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+    
+    .progress {
+      margin-top: 15px;
+      display: none;
+    }
+    
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: #ff9900;
+      width: 0%;
+      transition: width 0.3s;
+    }
+    
+    .progress-text {
+      text-align: center;
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 5px;
+    }
+    
+    .results {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 4px;
+    }
+    
+    .results h3 {
+      margin: 0 0 15px 0;
+      color: #0369a1;
+      font-size: 16px;
+    }
+    
+    .result-stats p {
+      margin: 8px 0;
+      font-size: 14px;
+    }
+    
+    .result-stats strong {
+      color: #374151;
+    }
+    
+    #extractAllBtn {
+      background: #3b82f6;
+      margin-top: 10px;
+    }
+    
+    #extractAllBtn:hover {
+      background: #2563eb;
+    }
+    
+    #exportBtn {
+      background: #10b981;
+      margin-top: 10px;
+    }
+    
+    #exportBtn:hover {
+      background: #059669;
+    }
+    
+
+    
+    .stats {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+    }
+    
+    .stats h4 {
+      margin: 0 0 15px 0;
+      color: #374151;
+      font-size: 14px;
+    }
+    
+    .stats p {
+      margin: 8px 0;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+    <div class="container">
+    <h1>Amazon Review Extractor</h1>
+    
+    <div class="form-group">
+      <div class="checkbox-group">
+        <input type="checkbox" id="includeImages" checked>
+        <label for="includeImages">Include review images</label>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <div class="checkbox-group">
+        <input type="checkbox" id="includeHelpful" checked>
+        <label for="includeHelpful">Include helpful votes</label>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <div class="checkbox-group">
+        <input type="checkbox" id="includeVerified" checked>
+        <label for="includeVerified">Include verified purchase status</label>
+      </div>
+    </div>
+    
+    <button id="extractAllBtn">Extract All Reviews</button>
+    <button id="exportBtn" style="display: none;">Export Reviews</button>
+    
+    <div id="status" class="status"></div>
+    
+    <div class="progress" id="progress">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="progress-text" id="progressText">0%</div>
+    </div>
+    
+    <div id="stats" class="stats" style="display: none;">
+      <h4>Extraction Stats</h4>
+      <p><strong>Total Reviews:</strong> <span id="totalReviews">0</span></p>
+      <p><strong>Pages Extracted:</strong> <span id="pagesExtracted">0</span></p>
+      <p><strong>Current Page:</strong> <span id="currentPage">-</span></p>
+      <p><strong>Product:</strong> <span id="productTitle">-</span></p>
+    </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

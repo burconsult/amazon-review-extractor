@@ -162,7 +162,7 @@ MIT License - see LICENSE file for details
 
 ## Changelog
 
-### v1.0.0 (2025-01-XX)
+### v1.0.0 (2025-08-28)
 
 - Initial release
 - Multi-page automatic extraction (up to 99 reviews per Amazon's pagination limit)
